@@ -15,7 +15,7 @@ public class AcessorioService implements Service <Acessorio, Long>{
     }
 
     @Override
-    public Acessorio findById(Long id) {
+    public  Acessorio findById(Long id) {
         return repo.findById( id );
     }
 

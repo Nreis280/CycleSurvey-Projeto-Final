@@ -28,5 +28,4 @@ public interface Repository<T, U> {
         }
     }
 
-    Bicicleta persist(Bicicleta bicicleta);
 }

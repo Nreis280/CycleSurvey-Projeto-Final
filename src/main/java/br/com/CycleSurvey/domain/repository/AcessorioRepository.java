@@ -2,6 +2,9 @@ package br.com.CycleSurvey.domain.repository;
 
 
 import br.com.CycleSurvey.domain.entity.Acessorio;
+import br.com.CycleSurvey.domain.entity.Bicicleta;
+import br.com.CycleSurvey.domain.service.AcessorioService;
+import br.com.CycleSurvey.domain.service.BicicletaService;
 import br.com.CycleSurvey.infra.ConnectionFactory;
 
 import java.sql.*;
@@ -35,6 +38,8 @@ public class AcessorioRepository implements Repository<Acessorio, Long> {
             String sql = "SELECT * FROM T_CYCLESURVEY_ACESSORIO";
             st = con.createStatement();
             rs = st.executeQuery(sql);
+            BicicletaService bicicletaService = new BicicletaService();
+
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
                     Long id = rs.getLong("ACESSORIO_ID");
@@ -43,7 +48,16 @@ public class AcessorioRepository implements Repository<Acessorio, Long> {
                     String tipo = rs.getString("TIPO_ACESSORIO");
                     double valor = rs.getDouble("VALOR");
                     String nf = rs.getString("NOTA_FISCAL");
-                    list.add(new Acessorio(id, marca, modelo,valor, tipo, nf));
+
+                    long idBk = rs.getLong("BICICLETA_ID");
+                    Bicicleta bicicleta = null;
+
+
+                    bicicleta = bicicletaService.findById(idBk);
+
+
+
+                    list.add(new Acessorio(id, marca, modelo,valor, tipo, nf,bicicleta));
                 }
             }
         } catch (SQLException e) {
@@ -66,6 +80,8 @@ public class AcessorioRepository implements Repository<Acessorio, Long> {
             ps = con.prepareStatement(sql);
             ps.setLong(1, id);
             rs = ps.executeQuery();
+            BicicletaService bicicletaService = new BicicletaService();
+
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
 
@@ -74,8 +90,12 @@ public class AcessorioRepository implements Repository<Acessorio, Long> {
                     String tipo = rs.getString("TIPO_ACESSORIO");
                     double valor = rs.getDouble("VALOR");
                     String nf = rs.getString("NOTA_FISCAL");
+                    long idBk = rs.getLong("BICICLETA_ID");
+                    Bicicleta bicicleta = null;
 
-                    acessorio = new Acessorio(id, marca, modelo,valor, tipo, nf);
+                    bicicleta = bicicletaService.findById(idBk);
+
+                    acessorio = new Acessorio(id, marca, modelo,valor, tipo, nf,bicicleta);
                 }
             } else {
                 System.out.println("Dados não encontrados com o id: " + id);
@@ -87,6 +107,7 @@ public class AcessorioRepository implements Repository<Acessorio, Long> {
         }
         return acessorio;
     }
+
 
     @Override
     public Acessorio persiste(Acessorio ac) {

@@ -2,6 +2,7 @@ package br.com.CycleSurvey.domain.repository;
 
 import br.com.CycleSurvey.domain.entity.Acessorio;
 import br.com.CycleSurvey.domain.entity.Bicicleta;
+import br.com.CycleSurvey.domain.service.AcessorioService;
 import br.com.CycleSurvey.infra.ConnectionFactory;
 
 import java.sql.*;
@@ -35,6 +36,7 @@ public class BicicletaRepository implements Repository<Bicicleta,Long> {
             String sql = "SELECT * FROM T_CYCLESURVEY_INFO_BIKE";
             st = con.createStatement();
             rs = st.executeQuery(sql);
+
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
                     Long id = rs.getLong("BICICLETA_ID");
@@ -44,7 +46,24 @@ public class BicicletaRepository implements Repository<Bicicleta,Long> {
                     double valor = rs.getDouble("VALOR");
                     String nf = rs.getString("NOTA_FISCAL");
 
-                    list.add(new Bicicleta(id,marca,modelo,anoCompra,valor,nf,acessorio));
+                    list.add(new Bicicleta(id,marca,modelo,anoCompra,valor,nf));
+
+
+                    /**
+                     *
+                     * SELECT *
+                     * FROM TB_BICICLETA b
+                     * left join TB_ACESSORIO a on
+                     * (b.acessorio_id = a.id_acessorio)
+                     * where b.id = ?
+                     *
+                     * +
+                     */
+
+                    /**TB_ACESSORIOS_BICICLETA*/
+
+
+
                 }
             }
         } catch (SQLException e) {
@@ -75,7 +94,7 @@ public class BicicletaRepository implements Repository<Bicicleta,Long> {
                     int anoCompra = rs.getInt("ANO_COMPRA");
                     double valor = rs.getDouble("VALOR");
                     String nf = rs.getString("NOTA_FISCAL");
-                    bicicleta = new Bicicleta(id,marca,modelo,anoCompra,valor,nf,acessorio);
+                    bicicleta = new Bicicleta(id,marca,modelo,anoCompra,valor,nf);
                 }
             } else {
                 System.out.println("Dados não encontrados com o id: " + id);
