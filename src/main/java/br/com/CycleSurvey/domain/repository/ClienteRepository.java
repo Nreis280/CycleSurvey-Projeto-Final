@@ -1,6 +1,8 @@
 package br.com.CycleSurvey.domain.repository;
 
+import br.com.CycleSurvey.domain.entity.Bicicleta;
 import br.com.CycleSurvey.domain.entity.Cliente;
+import br.com.CycleSurvey.domain.service.BicicletaService;
 import br.com.CycleSurvey.infra.ConnectionFactory;
 
 import java.sql.*;
@@ -34,6 +36,7 @@ public class ClienteRepository implements Repository <Cliente,Long>{
             String sql = "SELECT * FROM T_CYCLESURVEY_PESSOA_FISICA";
             st = con.createStatement();
             rs = st.executeQuery(sql);
+            BicicletaService bicicletaService = new BicicletaService();
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
                     Long id = rs.getLong("ID_PESSOA");
@@ -41,7 +44,17 @@ public class ClienteRepository implements Repository <Cliente,Long>{
                     LocalDate nascimento = rs.getDate("DT_NASCIMENTO").toLocalDate();
                     String cpf = rs.getString("CPF");
                     String cel = rs.getString("CELULAR");
-                    list.add(new Cliente(id, nome, nascimento,cpf,cel,));
+                    String cep = rs.getString("CEP");
+                    String cidade = rs.getString("CIDADE");
+                    String logradouro = rs.getString("LOGRADOURO");
+                    String nm_log = rs.getString("NUM_LOGRADOURO");
+                    String estado = rs.getString("ESTADO");
+                    String complemento = rs.getString("COMPLEMENTO");
+                    long idBk = rs.getLong("BICICLETA_ID");
+                    Bicicleta bicicleta = null;
+
+                    bicicleta = bicicletaService.findById(idBk);
+                    list.add(new Cliente(id, nome, nascimento,cpf,cel,cep,cidade,logradouro,nm_log,estado,complemento,bicicleta));
                 }
             }
         } catch (SQLException e) {
@@ -64,13 +77,26 @@ public class ClienteRepository implements Repository <Cliente,Long>{
             ps = con.prepareStatement(sql);
             ps.setLong(1, id);
             rs = ps.executeQuery();
+            BicicletaService bicicletaService = new BicicletaService();
+
             if (rs.isBeforeFirst()) {
                 while (rs.next()) {
                     String nome = rs.getString("NM_COMPLETO");
                     LocalDate nascimento = rs.getDate("DT_NASCIMENTO").toLocalDate();
                     String cpf = rs.getString("CPF");
                     String cel = rs.getString("CELULAR");
-                    pessoa = new Cliente(id, nome, nascimento,cpf,cel,);
+                    String cep = rs.getString("CEP");
+                    String cidade = rs.getString("CIDADE");
+                    String logradouro = rs.getString("LOGRADOURO");
+                    String nm_log = rs.getString("NUM_LOGRADOURO");
+                    String estado = rs.getString("ESTADO");
+                    String complemento = rs.getString("COMPLEMENTO");
+                    long idBk = rs.getLong("BICICLETA_ID");
+                    Bicicleta bicicleta = null;
+
+                    bicicleta = bicicletaService.findById(idBk);
+
+                    pessoa = new Cliente(id, nome, nascimento,cpf,cel,cep,cidade,logradouro,nm_log,estado,complemento,bicicleta);
                 }
             } else {
                 System.out.println("Dados não encontrados com o id: " + id);
@@ -89,7 +115,7 @@ public class ClienteRepository implements Repository <Cliente,Long>{
     public Cliente persiste(Cliente cl) {
 
         var sql = "INSERT INTO t_cycleSurvey_pessoa_fisica (NM_COMPLETO, DT_NASCIMENTO , CPF, CELULAR)" +
-                " VALUES (?, ?, ?, ?)";
+                " VALUES (O,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,)";
 
         Connection con = factory.getConnection();
         PreparedStatement ps = null;
@@ -103,6 +129,13 @@ public class ClienteRepository implements Repository <Cliente,Long>{
             ps.setDate(2, Date.valueOf(cl.getNascimento()));
             ps.setString(3, cl.getCpf());
             ps.setString(4, cl.getCelular());
+            ps.setString(5, cl.getCep());
+            ps.setString(6, cl.getCidade());
+            ps.setString(7, cl.getLogradouro());
+            ps.setString(8, cl.getNumero());
+            ps.setString(9, cl.getEstado());
+            ps.setString(10, cl.getComplemento());
+            ps.setLong(11, cl.getBicicleta().getId());
 
             ps.executeUpdate();
 

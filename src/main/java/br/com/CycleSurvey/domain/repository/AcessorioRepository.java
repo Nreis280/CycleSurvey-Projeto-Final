@@ -113,7 +113,7 @@ public class AcessorioRepository implements Repository<Acessorio, Long> {
     public Acessorio persiste(Acessorio ac) {
 
         var sql = "INSERT INTO T_CYCLESURVEY_ACESSORIO (MARCA_ACESSORIO , MODELO, TIPO_ACESSORIO, VALOR,NOTA_FISCAL)" +
-                " VALUES (0, ?,?,?,?,?)";
+                " VALUES (0, ?,?,?,?,?,?)";
 
 
         Connection con = factory.getConnection();
@@ -129,6 +129,7 @@ public class AcessorioRepository implements Repository<Acessorio, Long> {
             ps.setString(3, ac.getTipo());
             ps.setDouble(4, ac.getValor());
             ps.setString(5, ac.getNf());
+            ps.setLong(6, ac.getBicicleta().getId());
 
 
             ps.executeUpdate();
